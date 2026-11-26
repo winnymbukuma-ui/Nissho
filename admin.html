@@ -101,7 +101,7 @@ async function loadAdmin() {
     const a = e.target.dataset.a; if (!a) return;
     const g = LIST.find(x => x.token === row.dataset.t);
     if (a === 'wa') {
-      const txt = `Bonjour ${g.name},\n\nAvec une immense joie, Nissho & Madame Nissho vous invitent à leur mariage.\n\nVoici votre invitation personnelle (merci de ne pas la partager) :\n${link(g.token)}\n\nNous comptons sur votre présence.`;
+      const txt = `Bonjour ${g.name},\n\nAvec une immense joie, Nissho & Madame Nissho vous invitent à leur mariage coutumier.\n\nVoici votre invitation personnelle (merci de ne pas la partager) :\n${link(g.token)}\n\nNous comptons sur votre présence.`;
       window.open(`https://wa.me/${g.phone || ''}?text=${encodeURIComponent(txt)}`, '_blank');
     }
     if (a === 'cp') { await navigator.clipboard.writeText(link(g.token)); e.target.textContent = 'Lien copié ✓'; }
