@@ -22,9 +22,9 @@ const CONFIG = {
 
   // ⑤ PROGRAMME — horaires, noms des lieux et ADRESSES (le bouton ouvre Google Maps avec l’adresse)
   EVENTS: [
-    { time: '10:00', title: 'Cérémonie civile',     place: 'Nom de la mairie',   address: 'Adresse de la mairie, Ville' },
-    { time: '13:00', title: 'Bénédiction nuptiale', place: 'Nom de l’église',    address: 'Adresse de l’église, Ville' },
-    { time: '18:00', title: 'Réception & soirée',   place: 'Nom de la salle',    address: 'Adresse de la salle, Ville' }
+    { time: '10:00', title: 'Mariage coutumier',   place: 'Lieu de la cérémonie coutumière', address: 'Adresse du lieu, Ville' },
+    { time: '14:00', title: 'Réception',           place: 'Nom de la salle',                 address: 'Adresse de la salle, Ville' },
+    { time: '19:00', title: 'Soirée dansante',     place: 'Nom de la salle',                 address: 'Adresse de la salle, Ville' }
   ],
 
   // ⑥ PHOTOS DU COUPLE — remplacez ces liens (ou chemins de fichiers, ex: 'photos/1.jpg').
