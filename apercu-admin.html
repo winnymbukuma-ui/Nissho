@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Espace administrateur — Faire-part</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<style>
+:root{--cream:#FAF8F5;--gold:#C5A059;--ink:#2C2C2C;--sage:#8FA58F;--line:#E7DFD0;--serif:'Cormorant Garamond',Georgia,serif;--sans:'Montserrat',system-ui,sans-serif}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{background:var(--cream);color:var(--ink);font:300 15px/1.75 var(--sans);-webkit-font-smoothing:antialiased}
+body.lock{overflow:hidden}
+h1,h2,h3,.serif{font-family:var(--serif);font-weight:500;line-height:1.15}
+.sec{max-width:720px;margin:0 auto;padding:76px 22px;text-align:center}
+.sec h2{font-size:clamp(32px,7vw,44px);margin-bottom:14px}
+.rule{width:56px;height:1px;background:var(--gold);margin:18px auto 26px}
+.btn{display:inline-block;border:1px solid var(--gold);background:var(--gold);color:#fff;font:500 13px var(--sans);letter-spacing:.06em;padding:14px 28px;border-radius:2px;cursor:pointer;text-decoration:none;transition:background .25s,color .25s,transform .2s}
+.btn:hover{background:#b48d47}.btn:active{transform:scale(.98)}
+.btn.ghost{background:transparent;color:var(--gold)}.btn.ghost:hover{background:var(--gold);color:#fff}
+.btn.sm{padding:8px 14px;font-size:12px}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .9s,transform .9s}
+.reveal.in{opacity:1;transform:none}
+
+/* ---------- Admin ---------- */
+.admin{text-align:left;max-width:860px}
+.admin h1{font-size:40px;margin-bottom:20px}
+.panel{background:#fff;border:1px solid var(--line);padding:22px;margin-bottom:22px}
+.panel label{display:block;font-size:13px;margin-bottom:12px}
+.panel label input{margin-top:5px}
+.frow{display:grid;gap:12px}
+@media(min-width:640px){.frow{grid-template-columns:2fr 1fr 2fr}}
+.hint{font-size:12px;color:#777;margin-top:10px}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:22px}
+@media(min-width:640px){.stats{grid-template-columns:repeat(5,1fr)}}
+.stats div{background:#fff;border:1px solid var(--line);padding:12px;text-align:center;font-size:12px}
+.stats b{display:block;font:500 30px var(--serif);color:var(--gold)}
+.rows{list-style:none;padding:0}
+.row{background:#fff;border:1px solid var(--line);padding:16px;margin-bottom:10px;display:grid;gap:12px}
+@media(min-width:640px){.row{grid-template-columns:1fr auto;align-items:center}}
+.row small{color:#777}
+.acts{display:flex;gap:8px;flex-wrap:wrap}
+.badge{display:inline-block;font-size:11px;padding:2px 10px;border-radius:20px;background:#eee;margin-top:6px}
+.badge.present{background:#DCE8DC;color:#3f6a3f}.badge.absent{background:#F1DADA;color:#8a3a3a}.badge.op{background:#F3E9D2;color:#8a6a2a}
+.wish{font:italic 400 17px var(--serif);margin-top:6px}
+
+@media(prefers-reduced-motion:reduce){*{transition-duration:.01s!important;animation:none!important}.reveal{opacity:1;transform:none}}</style>
+</head>
+<body>
+<main id="app"></main>
+<script>
+/* ==========================================================================
+   ★ CONFIGURATION — C’EST ICI QUE VOUS CHANGEZ TOUT ★
+   ========================================================================== */
+const CONFIG = {
+  // ① BASE DE DONNÉES (Supabase) — collez vos 2 valeurs (voir supabase.sql + explications)
+  //    Tant que ces valeurs ne sont pas remplies, l’app tourne en MODE DÉMO (PIN admin : 1234,
+  //    données stockées dans votre navigateur seulement).
+  SUPABASE_URL: 'VOTRE_URL_SUPABASE',
+  SUPABASE_ANON_KEY: 'VOTRE_CLE_ANON_SUPABASE',
+
+  // ② ADRESSE DU SITE une fois en ligne, ex: 'https://mariage-nissho.netlify.app/' (sert aux liens uniques). Vide = automatique.
+  SITE_URL: 'https://monsite.com/',
+
+  // ③ MUSIQUE — collez ici le lien de VOTRE fichier MP3 (hébergé sur votre site ou ailleurs).
+  //    Lien par défaut = morceau de démonstration libre de droits.
+  MUSIC_URL: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+  MUSIC_TITLE: 'A Thousand Years - Christina Perri (Violin Cover - Joel Grainger)',
+
+  // ④ DATE DU MARIAGE (format AAAA-MM-JJTHH:MM:SS) + texte affiché
+  WEDDING_DATE: '2027-01-16T10:00:00',
+  WEDDING_DATE_LABEL: 'Samedi 16 janvier 2027',
+
+  // ⑤ PROGRAMME — horaires, noms des lieux et ADRESSES (le bouton ouvre Google Maps avec l’adresse)
+  EVENTS: [
+    { time: '10:00', title: 'Cérémonie civile',     place: 'Nom de la mairie',   address: 'Adresse de la mairie, Ville' },
+    { time: '13:00', title: 'Bénédiction nuptiale', place: 'Nom de l’église',    address: 'Adresse de l’église, Ville' },
+    { time: '18:00', title: 'Réception & soirée',   place: 'Nom de la salle',    address: 'Adresse de la salle, Ville' }
+  ],
+
+  // ⑥ PHOTOS DU COUPLE — remplacez ces liens (ou chemins de fichiers, ex: 'photos/1.jpg').
+  //    Classes : '' normal, 'tall' = haute, 'wide' = large.
+  PHOTOS: [
+    { src: 'data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20width%3D%27700%27%20height%3D%27900%27%3E%3Cdefs%3E%3ClinearGradient%20id%3D%27g%27%20x1%3D%270%27%20y1%3D%270%27%20x2%3D%271%27%20y2%3D%271%27%3E%3Cstop%20offset%3D%270%27%20stop-color%3D%27%23E9DFCD%27/%3E%3Cstop%20offset%3D%271%27%20stop-color%3D%27%23C5A059%27%20stop-opacity%3D%27.55%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width%3D%27700%27%20height%3D%27900%27%20fill%3D%27url%28%23g%29%27/%3E%3Ctext%20x%3D%27350%27%20y%3D%27470%27%20font-family%3D%27Georgia%27%20font-style%3D%27italic%27%20font-size%3D%2746%27%20fill%3D%27white%27%20text-anchor%3D%27middle%27%3EPhoto%201%3C/text%3E%3C/svg%3E', cls: 'tall' },
+    { src: 'data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20width%3D%27700%27%20height%3D%27900%27%3E%3Cdefs%3E%3ClinearGradient%20id%3D%27g%27%20x1%3D%270%27%20y1%3D%270%27%20x2%3D%271%27%20y2%3D%271%27%3E%3Cstop%20offset%3D%270%27%20stop-color%3D%27%23DCE5DB%27/%3E%3Cstop%20offset%3D%271%27%20stop-color%3D%27%238FA58F%27%20stop-opacity%3D%27.55%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width%3D%27700%27%20height%3D%27900%27%20fill%3D%27url%28%23g%29%27/%3E%3Ctext%20x%3D%27350%27%20y%3D%27470%27%20font-family%3D%27Georgia%27%20font-style%3D%27italic%27%20font-size%3D%2746%27%20fill%3D%27white%27%20text-anchor%3D%27middle%27%3EPhoto%202%3C/text%3E%3C/svg%3E', cls: '' },
+    { src: 'data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20width%3D%27700%27%20height%3D%27900%27%3E%3Cdefs%3E%3ClinearGradient%20id%3D%27g%27%20x1%3D%270%27%20y1%3D%270%27%20x2%3D%271%27%20y2%3D%271%27%3E%3Cstop%20offset%3D%270%27%20stop-color%3D%27%23F3E9D2%27/%3E%3Cstop%20offset%3D%271%27%20stop-color%3D%27%23B48D47%27%20stop-opacity%3D%27.55%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width%3D%27700%27%20height%3D%27900%27%20fill%3D%27url%28%23g%29%27/%3E%3Ctext%20x%3D%27350%27%20y%3D%27470%27%20font-family%3D%27Georgia%27%20font-style%3D%27italic%27%20font-size%3D%2746%27%20fill%3D%27white%27%20text-anchor%3D%27middle%27%3EPhoto%203%3C/text%3E%3C/svg%3E', cls: '' },
+    { src: 'data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20width%3D%27700%27%20height%3D%27900%27%3E%3Cdefs%3E%3ClinearGradient%20id%3D%27g%27%20x1%3D%270%27%20y1%3D%270%27%20x2%3D%271%27%20y2%3D%271%27%3E%3Cstop%20offset%3D%270%27%20stop-color%3D%27%23EDE4D3%27/%3E%3Cstop%20offset%3D%271%27%20stop-color%3D%27%239c7a38%27%20stop-opacity%3D%27.55%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width%3D%27700%27%20height%3D%27900%27%20fill%3D%27url%28%23g%29%27/%3E%3Ctext%20x%3D%27350%27%20y%3D%27470%27%20font-family%3D%27Georgia%27%20font-style%3D%27italic%27%20font-size%3D%2746%27%20fill%3D%27white%27%20text-anchor%3D%27middle%27%3EPhoto%204%3C/text%3E%3C/svg%3E', cls: 'wide' },
+    { src: 'data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20width%3D%27700%27%20height%3D%27900%27%3E%3Cdefs%3E%3ClinearGradient%20id%3D%27g%27%20x1%3D%270%27%20y1%3D%270%27%20x2%3D%271%27%20y2%3D%271%27%3E%3Cstop%20offset%3D%270%27%20stop-color%3D%27%23E3EAE2%27/%3E%3Cstop%20offset%3D%271%27%20stop-color%3D%27%236f8a6f%27%20stop-opacity%3D%27.55%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width%3D%27700%27%20height%3D%27900%27%20fill%3D%27url%28%23g%29%27/%3E%3Ctext%20x%3D%27350%27%20y%3D%27470%27%20font-family%3D%27Georgia%27%20font-style%3D%27italic%27%20font-size%3D%2746%27%20fill%3D%27white%27%20text-anchor%3D%27middle%27%3EPhoto%205%3C/text%3E%3C/svg%3E', cls: 'tall' },
+    { src: 'data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20width%3D%27700%27%20height%3D%27900%27%3E%3Cdefs%3E%3ClinearGradient%20id%3D%27g%27%20x1%3D%270%27%20y1%3D%270%27%20x2%3D%271%27%20y2%3D%271%27%3E%3Cstop%20offset%3D%270%27%20stop-color%3D%27%23F1E8DA%27/%3E%3Cstop%20offset%3D%271%27%20stop-color%3D%27%23C5A059%27%20stop-opacity%3D%27.55%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width%3D%27700%27%20height%3D%27900%27%20fill%3D%27url%28%23g%29%27/%3E%3Ctext%20x%3D%27350%27%20y%3D%27470%27%20font-family%3D%27Georgia%27%20font-style%3D%27italic%27%20font-size%3D%2746%27%20fill%3D%27white%27%20text-anchor%3D%27middle%27%3EPhoto%206%3C/text%3E%3C/svg%3E', cls: '' }
+  ]
+};
+/* ======================= FIN DE LA CONFIGURATION ======================= */
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const hasSB = !CONFIG.SUPABASE_URL.includes('VOTRE');
+const sb = hasSB ? supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY) : null;
+const siteUrl = () => CONFIG.SITE_URL || (location.origin + location.pathname.replace(/[^/]*$/, ''));
+const link = t => `${siteUrl()}?invite=${t}`;
+
+/* ---------- Accès aux données (Supabase ou mode démo) ---------- */
+async function rpc(name, a = {}) {
+  if (sb) { const { data, error } = await sb.rpc(name, a); if (error) throw error; return data; }
+  const g = JSON.parse(localStorage.getItem('fp_demo') || '[]'), save = () => localStorage.setItem('fp_demo', JSON.stringify(g));
+  const f = t => g.find(x => x.token === t);
+  if (name.startsWith('admin_') && a.p_pin !== '1234') throw new Error('PIN');
+  switch (name) {
+    case 'get_invite': { const x = f(a.p_token); if (!x) return null; x.opened_at ||= new Date().toISOString(); save(); return { name: x.name, seats: x.seats, status: x.status, message: x.message }; }
+    case 'rsvp': { const x = f(a.p_token); if (x) { x.status = a.p_status; x.message = a.p_message; save(); } return null; }
+    case 'confirmed_count': return g.filter(x => x.status === 'present').reduce((s, x) => s + x.seats, 0);
+    case 'admin_list': return g;
+    case 'admin_add': g.unshift({ token: a.p_token, name: a.p_name, seats: a.p_seats, phone: a.p_phone, status: 'pending', created_at: new Date().toISOString() }); save(); return null;
+    case 'admin_delete': g.splice(g.findIndex(x => x.token === a.p_token), 1); save(); return null;
+  }
+}
+
+
+</script>
+<script>
+/* ---------- ESPACE ADMIN (page séparée : admin.html) ---------- */
+let PIN, LIST = [];
+function adminView() {
+  document.body.classList.remove('lock');
+  $('#app').innerHTML = `<section class="sec admin"><h1>Espace administrateur</h1>
+    <form class="panel" id="lg"><label>Code PIN<input id="pin" type="password" autocomplete="off" required></label>
+    <button class="btn">Se connecter</button><p class="err" id="lgErr"></p>
+    ${hasSB ? '' : '<p class="hint">Mode démo : le code est 1234. Les données restent dans ce navigateur.</p>'}</form></section>`;
+  $('#lg').onsubmit = async e => {
+    e.preventDefault(); PIN = $('#pin').value;
+    try { await loadAdmin(); } catch (x) { $('#lgErr').textContent = 'Code PIN incorrect.'; }
+  };
+}
+async function loadAdmin() {
+  LIST = await rpc('admin_list', { p_pin: PIN }) || [];
+  const sum = f => LIST.filter(f).reduce((s, g) => s + g.seats, 0);
+  const label = { pending: 'En attente', present: 'Présent', absent: 'Absent' };
+  $('#app').innerHTML = `<section class="sec admin"><h1>Espace administrateur</h1>
+  <div class="stats">
+    <div><b>${LIST.length}</b>invitations</div><div><b>${LIST.filter(g => g.opened_at).length}</b>liens ouverts</div>
+    <div><b>${sum(g => g.status === 'present')}</b>personnes présentes</div><div><b>${sum(g => g.status === 'absent')}</b>personnes absentes</div>
+    <div><b>${sum(g => g.status === 'pending')}</b>sans réponse</div></div>
+  <form class="panel" id="add"><div class="frow">
+    <label>Invité ou couple<input id="aName" placeholder="Couple Roger" required maxlength="80"></label>
+    <label>Places<input id="aSeats" type="number" min="1" max="20" value="1" required></label>
+    <label>N° WhatsApp (facultatif)<input id="aPhone" inputmode="tel" placeholder="243810000000"></label></div>
+    <button class="btn">Ajouter l’invité</button><p class="hint">Numéro avec indicatif pays, sans « + ». Sans numéro, WhatsApp vous laisse choisir le contact.</p></form>
+  <ul class="rows">${LIST.map(g => `<li class="row" data-t="${esc(g.token)}"><div>
+      <b>${esc(g.name)}</b> <small>· ${g.seats} place${g.seats > 1 ? 's' : ''}</small><br>
+      <span class="badge ${g.status}">${label[g.status]}</span> <span class="badge ${g.opened_at ? 'op' : ''}">${g.opened_at ? 'Lien ouvert' : 'Non ouvert'}</span>
+      ${g.message ? `<p class="wish">« ${esc(g.message)} »</p>` : ''}</div>
+    <div class="acts"><button class="btn sm" data-a="wa">Envoyer sur WhatsApp</button><button class="btn ghost sm" data-a="cp">Copier le lien</button><button class="btn ghost sm" data-a="rm">Supprimer</button></div></li>`).join('')
+    || '<p class="hint">Aucun invité pour le moment. Ajoutez le premier ci-dessus.</p>'}</ul></section>`;
+
+  $('#add').onsubmit = async e => {
+    e.preventDefault();
+    const name = $('#aName').value.trim();
+    const rnd = Array.from(crypto.getRandomValues(new Uint8Array(6)), b => 'abcdefghjkmnpqrstuvwxyz23456789'[b % 31]).join('');
+    const slug = name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 30);
+    await rpc('admin_add', { p_pin: PIN, p_name: name, p_seats: +$('#aSeats').value, p_phone: $('#aPhone').value.replace(/\D/g, ''), p_token: `${slug}-${rnd}` });
+    loadAdmin();
+  };
+  document.querySelectorAll('.row').forEach(row => row.onclick = async e => {
+    const a = e.target.dataset.a; if (!a) return;
+    const g = LIST.find(x => x.token === row.dataset.t);
+    if (a === 'wa') {
+      const txt = `Bonjour ${g.name},\n\nAvec une immense joie, Nissho & Madame Nissho vous invitent à leur mariage.\n\nVoici votre invitation personnelle (merci de ne pas la partager) :\n${link(g.token)}\n\nNous comptons sur votre présence.`;
+      window.open(`https://wa.me/${g.phone || ''}?text=${encodeURIComponent(txt)}`, '_blank');
+    }
+    if (a === 'cp') { await navigator.clipboard.writeText(link(g.token)); e.target.textContent = 'Lien copié ✓'; }
+    if (a === 'rm' && confirm(`Supprimer « ${g.name} » ? Son lien ne fonctionnera plus.`)) { await rpc('admin_delete', { p_pin: PIN, p_token: g.token }); loadAdmin(); }
+  });
+}
+
+try{if(!localStorage.getItem('fp_demo')){const d=new Date().toISOString();localStorage.setItem('fp_demo',JSON.stringify([
+{token:'couple-roger-x7k2m9',name:'Couple Roger',seats:2,status:'present',message:'Tous nos vœux de bonheur !',opened_at:d,created_at:d},
+{token:'famille-kabila-q4n8d2',name:'Famille Kabila',seats:5,status:'pending',opened_at:d,created_at:d},
+{token:'m-jean-b3h6w5',name:'M. Jean',seats:1,status:'absent',message:'Désolé, je serai en voyage.',opened_at:d,created_at:d},
+{token:'tante-marie-c8d3f7',name:'Tante Marie',seats:1,status:'pending',created_at:d}]));}}catch(e){}
+adminView();
+</script>
+</body>
+</html>
