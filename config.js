@@ -5,7 +5,7 @@ const CONFIG = {
   // ① BASE DE DONNÉES (Supabase) — collez vos 2 valeurs (voir supabase.sql + explications)
   //    Tant que ces valeurs ne sont pas remplies, l’app tourne en MODE DÉMO (PIN admin : 1234,
   //    données stockées dans votre navigateur seulement).
-  SUPABASE_URL: 'https://wqbzqdeofewoqclrufqv.supabase.co/rest/v1/',
+  SUPABASE_URL: 'https://wqbzqdeofewoqclrufqv.supabase.co',
   SUPABASE_ANON_KEY: 'sb_publishable_hV64d2CckCtPSCriA6F_ow_9UmQmLUw',
 
   // ② ADRESSE DU SITE une fois en ligne, ex: 'https://mariage-nissho.netlify.app/' (sert aux liens uniques). Vide = automatique.
